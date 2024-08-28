@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configEntity xmlns="http://www.ericsson.com/oss/itpf/deployment/dst/descriptor">
+  <description>entity_resources_are_for</description>
+  <singleton>false</singleton>
+  <scaleUnit>
+    <loadDrivers>
+      <!--scaleUnit.loadDrivers.loadDriver.name : agreed Name of Load Driver-->
+      <!--scaleUnit.loadDrivers.loadDriver.description : Description of Load Driver in the form Use Case Identifier : load information from FS-->
+      <loadDriver name="numberBasebandRadioLTECells" description="Number of LTE Cells deployed on COM/ECIM nodes"></loadDriver>
+    </loadDrivers>
+    <minimumUnit>
+      <!--minimumUnit.cpuCores : number of vcpu allocated to the VM in vapp deployment-->
+      <!--minimumUnit.cpuMinutes : value for cpu minutes per day required under no load -->
+      <!--minimumUnit.peakCpuMinutes : value for cpu minutes in busy hour required under no load -->
+      <!--minimumUnit.memory : value for memory required under no load-->
+      <!--minimumUnit.profileConversionFormulae : this section is not required to be filled in at present-->
+      <profile>
+        <cpuCores>2</cpuCores>
+        <cpuMinutes>0</cpuMinutes>
+        <peakCpuMinutes>0</peakCpuMinutes>
+        <memory>0</memory>
+      </profile>
+      <profileConversionFormulae>
+        <cpuCores></cpuCores>
+        <cpuMinutes></cpuMinutes>
+        <peakCpuMinutes></peakCpuMinutes>
+        <memory></memory>
+      </profileConversionFormulae>
+    </minimumUnit>
+    <optimalUnit>
+      <!--optimalUnit.profile.cpuCores : number of vcpu allocated to the VM-->
+      <!--optimalUnit.profile.cpuMinutes : after testing this is the cpu minutes per day used under sustainable load-->
+      <!--optimalUnit.profile.peakCpuMinutes : after testing this is the cpu minutes in a busy hour used under sustainable load-->
+      <!--optimalUnit.profile.memory : during initial introduction this is the RAM allocate3d to the VM when it is introduced into the deployment. after testing it is the maximum memory used under sustainable load-->
+      <!--optimalUnit.profile.cpuCores : No input required-->
+      <!--optimalUnit.profileConversionFormulae.cpuMinutes : using load drivers and parameters identify how the no load cpu minutes (minimumUnit.cpuMinutes) are affected by the load applied to the vm up to the optimalUnit.cpuMinutes value.-->
+      <!--optimalUnit.profileConversionFormulae.peakCpuMinutes : using load drivers and parameters identify how the no load peak cpu minutes (minimumUnit.peakCpuMinutes) are affected by the load applied to the vm up to the optimalUnit.peakCpuMinutes value.-->
+      <!--optimalUnit.profileConversionFormulae.memory : using load drivers and parameters identify how the no load memory minimumUnit.memory is increased by the laod applied to the vm up to the optimalUnit.memory value-->
+      <profile>
+        <cpuCores>0</cpuCores>
+        <cpuMinutes>0</cpuMinutes>
+        <peakCpuMinutes>0</peakCpuMinutes>
+        <memory>0</memory>
+      </profile>
+      <profileConversionFormulae>
+        <cpuCores>()</cpuCores>
+        <cpuMinutes>()</cpuMinutes>
+        <peakCpuMinutes>()</peakCpuMinutes>
+        <memory>()</memory>
+      </profileConversionFormulae>
+    </optimalUnit>
+  </scaleUnit>
+  <parameters>
+    <!--Name parameters using the application name if they dont need to be shared across applications.use parameters to identify drivers of load that would not be exposed externally as stated capability in the FS.-->
+    <property name="averageNumberRopsPerHour" defaultValue="4" description="Number of ROPS to be dimensioned for (4 is defined to ensure space for one extra ROP to ensure complete retention time is met at point of addition of new ROP)" usage="OPTIONAL"></property>
+  </parameters>
+  <deploymentDependencies>
+    <!--deploymentDependency section for each resoruce need. load drivers for deployment dependency defined by product which is resource provider NAS and JMS examples included-->
+    <deploymentDependency>
+      <!--deploymetnDependency.alias : unique purpose of filesystem-->
+      <!--deploymetnDependency.nasfileSystemName : Name of Filesytem needed provided by the application-->
+      <!--deploymetnDependency.nasFileSystemSpaceMB : Level of FileSystemSpace required in MB, The calculation for the volume required comes from the application needing space-->
+      <!--deploymetnDependency.nasFileSnapSpacePercentage : Level of Space to be reserved in Percentage. This indicates the percentage of FileSystemSpace required to hold snapshots performed during upgrade.-->
+      <groupId>com.ericsson.nms.litp</groupId>
+      <artifactId>ERICnasprovider_CXPxxxxxx</artifactId>
+      <version />
+      <alias>PM1_PM2_stats</alias>
+      <qualifier>GLOBAL</qualifier>
+      <loadDriverConverters>
+        <loadConversionFormula dependencyLoadDriver="nasfileSystemName">ericsson/pmx</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="nasFileSystemSpaceMB">(load drivers and parameters in a formula that defines the resoruces needed)</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="nasFileSnapSpacePercentage">0</loadConversionFormula>
+      </loadDriverConverters>
+    </deploymentDependency>
+    <deploymentDependency>
+      <!--deploymetnDependency.alias : Name of Queue or Topic-->
+      <!--deploymetnDependency.jmsDestinationName : Name of Queue or Topic-->
+      <!--deploymetnDependency.jmsDestinationType : Queue or Topic-->
+      <!--deploymetnDependency.jmsDestinationSizeBytes : Using loaddrivers and parameters calculate the size of queue in bytes-->
+      <groupId>com.ericsson.oss.itpf.sdk</groupId>
+      <artifactId>sdk-eventbus-jms-hornetq</artifactId>
+      <version></version>
+      <alias>ClusteredFMMediationChannel</alias>
+      <qualifier>GLOBAL</qualifier>
+      <loadDriverConverters>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationName">ClusteredFMMediationChannel</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationType">Queue</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationSizeBytes">()</loadConversionFormula>
+      </loadDriverConverters>
+    </deploymentDependency>
+  </deploymentDependencies>
+</configEntity>

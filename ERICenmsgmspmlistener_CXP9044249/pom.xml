@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ericsson.oss.servicegroupcontainers</groupId>
+    <artifactId>mspm-listener</artifactId>
+    <version>1.0.6-SNAPSHOT</version>
+  </parent>
+  <groupId>com.ericsson.oss.servicegroupcontainers</groupId>
+  <artifactId>ERICenmsgmspmlistener_CXP9044249</artifactId>
+  <packaging>${rpm.packaging}</packaging>
+  <name>mspm-listener feature rpm CXP module</name>
+  <properties>
+    <com.ericsson.oss.rpm.architecture>noarch</com.ericsson.oss.rpm.architecture>
+    <rpm-root>ericsson</rpm-root>
+    <comp-name>enm</comp-name>
+    <install-path>jboss</install-path>
+    <publish_artifact>true</publish_artifact>
+    <media.category>service</media.category>
+    <!-- this is in the integration pom, which needs to be merged -->
+    <vm.jboss-install-path>/ericsson/3pp/jboss</vm.jboss-install-path>
+  </properties>
+  <build>
+    <plugins>
+      <!--       <plugin> -->
+      <!--         <groupId>com.ericsson.oss.itpf.deployment</groupId> -->
+      <!--         <artifactId>deployment-descriptor-plugin</artifactId> -->
+      <!--         <executions> -->
+      <!--           <execution> -->
+      <!--             <goals> -->
+      <!--               <goal>configurable-entity</goal> -->
+      <!--             </goals> -->
+      <!--           </execution> -->
+      <!--         </executions> -->
+      <!--         <configuration> -->
+      <!--           <configEntity> -->
+      <!--             <parameters> -->
+      <!--               <itemType name="package"> -->
+      <!--                 <property name="name" defaultValue="ERICmscm_fp_CXP5678911"/> -->
+      <!--               </itemType> -->
+      <!--             </parameters> -->
+      <!--             <deploymentDependencies> -->
+      <!--               <deploymentDependency> -->
+      <!--                 <artifact></artifact> -->
+      <!--                 <group></group> -->
+      <!--                 <version>latest</version> -->
+      <!--                 <alias>model_repository</alias> -->
+      <!--               </deploymentDependency> -->
+      <!--               <deploymentDependency> -->
+      <!--                 <artifact></artifact> -->
+      <!--                 <group></group> -->
+      <!--                 <version></version> -->
+      <!--                 <alias>ddc_share</alias> -->
+      <!--               </deploymentDependency> -->
+      <!--               <deploymentDependency> -->
+      <!--                 <artifact></artifact> -->
+      <!--                 <group></group> -->
+      <!--                 <version></version> -->
+      <!--                 <alias>enm_data</alias> -->
+      <!--               </deploymentDependency> -->
+      <!--               <deploymentDependency> -->
+      <!--                 <artifact></artifact> -->
+      <!--                 <group></group> -->
+      <!--                 <version></version> -->
+      <!--                 <alias>versant-server</alias> -->
+      <!--               </deploymentDependency> -->
+      <!--             </deploymentDependencies> -->
+      <!--             <assignments> -->
+      <!--             </assignments> -->
+      <!--           </configEntity> -->
+      <!--         </configuration> -->
+      <!--       </plugin> -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>timestamp-property</id>
+            <goals>
+              <goal>timestamp-property</goal>
+            </goals>
+            <configuration>
+              <name>this.year</name>
+              <pattern>yyyy</pattern>
+              <unit>year</unit>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <skip>true</skip>
+          <inherited>true</inherited>
+          <copyright>${this.year} Ericsson AB. All rights reserved</copyright>
+          <description>${ericsson.rstate}</description>
+          <group>ERI-NMS</group>
+          <vendor>Ericsson AB</vendor>
+          <url>www.ericsson.com</url>
+          <requires>
+            <!--The following is an example, non-exhaustive or specific list 
+              of required RPM's for most JEE Service Groups -->
+            <require>ERICjbossconfig_CXP9031583</require>
+            <require>ERICserviceframework_CXP9031003</require>
+            <require>ERICpib_CXP9030194</require>
+            <require>ERICserviceframeworkmodule_CXP9031004</require>
+            <require>ERICmodelserviceapi_CXP9030594</require>
+            <require>ERICmodelservice_CXP9030595</require>
+            <require>ERICddc_CXP9030294</require>
+            <!--Include the remainder of the dependent RPMs -->
+          </requires>
+          <mappings>
+            <mapping>
+              <directory>${vm.jboss-install-path}/standalone/configuration</directory>
+              <filemode>440</filemode>
+              <username>${jboss-username}</username>
+              <groupname>${jboss-groupname}</groupname>
+              <configuration>false</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>false</recurseDirectories>
+              <sources>
+                <source>
+                  <location>src/main/resources</location>
+                  <includes>
+                    <include>standalone-enm.xml</include>
+                  </includes>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>${vm.jboss-install-path}</directory>
+              <filemode>440</filemode>
+              <username>${jboss-username}</username>
+              <groupname>${jboss-groupname}</groupname>
+              <configuration>false</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>false</recurseDirectories>
+              <sources>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as.conf</destination>
+                </source>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as-flavour-2G.conf</destination>
+                </source>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as-flavour-4G.conf</destination>
+                </source>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as-flavour-6G.conf</destination>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>${vm.jboss-install-path}/bin</directory>
+              <filemode>440</filemode>
+              <username>${jboss-username}</username>
+              <groupname>${jboss-groupname}</groupname>
+              <configuration>false</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>false</recurseDirectories>
+              <sources>
+                <source>
+                  <location>src/main/resources</location>
+                  <includes>
+                    <include>jboss-as-remote-ejb.conf</include>
+                  </includes>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>${vm.jboss-install-path}/bin/pre-start</directory>
+              <filemode>550</filemode>
+              <username>${jboss-username}</username>
+              <groupname>${jboss-groupname}</groupname>
+              <configuration>false</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>false</recurseDirectories>
+              <sources>
+                <source>
+                  <location>src/main/scripts</location>
+                  <includes>
+                    <include>oomKillerTuning.sh</include>
+                  </includes>
+                </source>
+              </sources>
+            </mapping>
+          </mappings>
+<!--          <postinstallScriptlet>-->
+<!--            <scriptFile>src/main/scripts/postinstall</scriptFile>-->
+<!--            <fileEncoding>utf-8</fileEncoding>-->
+<!--          </postinstallScriptlet>-->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.ericsson.oss.itpf.deployment</groupId>
+        <artifactId>deployment-descriptor-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>configurable-entity</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <configEntity>
+            <!--             <parameters> -->
+            <!--               <property name="vm_service_name" defaultValue=""/> -->
+            <!--               <itemType name="vm-package"> -->
+            <!--                 <property name="name" defaultValue=""/> -->
+            <!--               </itemType> -->
+            <!--             </parameters> -->
+            <!--             <deploymentDependencies> -->
+            <!--               <deploymentDependency> -->
+            <!--                 <groupId>com.ericsson.oss.itpf.deployment.tools</groupId> -->
+            <!--                 <artifactId>virtual-machine</artifactId> -->
+            <!--                 <qualifier>CONTAINER</qualifier> -->
+            <!--                 <alias>vm</alias> -->
+            <!--               </deploymentDependency> -->
+            <!--             </deploymentDependencies> -->
+            <!--             <assignments> -->
+            <!--               <assign> -->
+            <!--                 <path>vm</path> -->
+            <!--                 <property name="routable_interfaces" value="0"/> -->
+            <!--                 <itemType name="vm-service"> -->
+            <!--                   <property name="service_name" value=""/> -->
+            <!--                   <property name="cpus" value="2"/> -->
+            <!--                   <property name="ram" value="4096M"/> -->
+            <!--                   <property name="image_name" value=""/> -->
+            <!--                 </itemType> -->
+            <!--                 <itemType name="vcs-clustered-service"> -->
+            <!--                   <property name="active" value="2"/> -->
+            <!--                   <property name="standby" value="0"/> -->
+            <!--                 </itemType> -->
+            <!--               </assign> -->
+            <!--               <assign> -->
+            <!--                 <path>vm</path> -->
+            <!--                 <scope>CLOUD</scope> -->
+            <!--                 <itemType name="vm-service"> -->
+            <!--                   <property name="cpus" value="2"/> -->
+            <!--                   <property name="ram" value="4096M"/> -->
+            <!--                 </itemType> -->
+            <!--               </assign> -->
+            <!--             </assignments> -->
+          </configEntity>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
